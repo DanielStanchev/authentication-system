@@ -11,7 +11,7 @@
 
     <artifactId>restexport</artifactId>
     <version>${revision}</version>
-    <name>core</name>
+    <name>restexport</name>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -13,6 +13,7 @@
     <properties>
         <java.version>21</java.version>
         <revision>0.0.1-SNAPSHOT</revision>
+        <flattenpomversion>1.2.7</flattenpomversion>
     </properties>
 
     <groupId>com.tinqinacademy.authentication</groupId>
@@ -77,7 +78,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
-                <version>1.2.7</version> <!-- Use the latest version -->
+                <version>${flattenpomversion}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -86,9 +87,6 @@
                         <phase>process-resources</phase>
                     </execution>
                 </executions>
-                <configuration>
-                    <!-- Optional configurations -->
-                </configuration>
             </plugin>
         </plugins>
     </build>

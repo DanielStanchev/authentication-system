@@ -42,5 +42,4 @@ public class UserController extends BaseController {
         Either<ErrorWrapper, RegisterUserOutput> output = registerUser.process(input);
         return handleResult(output, HttpStatus.CREATED);
     }
-
 }

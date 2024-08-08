@@ -18,6 +18,7 @@ import io.vavr.control.Either;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "User API", description = "User related functionality.")
@@ -39,7 +40,7 @@ public class UserController extends BaseController {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
     @PostMapping("auth/authenticate")
-    public ResponseEntity<?> authenticate(AuthenticateUserInput authenticateUserInput) {
+    public ResponseEntity<?> authenticate(@RequestBody AuthenticateUserInput authenticateUserInput) {
 
         AuthenticateUserInput input = AuthenticateUserInput.builder()
             .token(authenticateUserInput.getToken())
@@ -54,7 +55,7 @@ public class UserController extends BaseController {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
     @PostMapping("auth/login")
-    public ResponseEntity<?> login(LoginUserInput loginUserInput) {
+    public ResponseEntity<?> login(@RequestBody LoginUserInput loginUserInput) {
 
         LoginUserInput input = LoginUserInput.builder()
             .username(loginUserInput.getUsername())
@@ -70,7 +71,7 @@ public class UserController extends BaseController {
         @ApiResponse(responseCode = "201", description = "CREATED"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
     @PostMapping("auth/register")
-    public ResponseEntity<?> register(RegisterUserInput registerUserInput) {
+    public ResponseEntity<?> register(@RequestBody RegisterUserInput registerUserInput) {
 
         RegisterUserInput input = RegisterUserInput.builder()
             .username(registerUserInput.getUsername())

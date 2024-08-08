@@ -5,7 +5,7 @@ import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
-import com.tinqinacademy.authentication.core.config.JWTUtil;
+import com.tinqinacademy.authentication.core.config.JwtUtil;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
 import com.tinqinacademy.authentication.core.exception.exceptions.NotFoundException;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
@@ -30,10 +30,10 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     public LoginUserOperationProcessor(ConversionService conversionService, Validator validator, ErrorMapper errorMapper, UserRepository userRepository,
-                                       PasswordEncoder passwordEncoder, JWTUtil jwtUtil) {
+                                       PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         super(validator, conversionService,errorMapper);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;

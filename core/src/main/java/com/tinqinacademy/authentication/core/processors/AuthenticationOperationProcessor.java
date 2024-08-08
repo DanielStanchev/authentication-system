@@ -5,8 +5,8 @@ import com.tinqinacademy.authentication.api.operations.authenticateuser.Authenti
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserInput;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
-import com.tinqinacademy.authentication.core.config.JwtTokenInfo;
-import com.tinqinacademy.authentication.core.config.JwtUtil;
+import com.tinqinacademy.authentication.core.security.JwtTokenInfo;
+import com.tinqinacademy.authentication.core.security.JwtUtil;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
 import com.tinqinacademy.authentication.core.exception.exceptions.NotFoundException;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
@@ -55,8 +55,7 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
                 AuthenticateUserOutput output = AuthenticateUserOutput.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .role(user.getRole()
-                              .toString())
+                    .role(user.getRole().toString())
                     .build();
 
                 log.info("End authenticateUser output {}", output);

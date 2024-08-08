@@ -48,6 +48,6 @@ public class UserEntity extends BaseEntity {
     private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
-
+    @Column(name = "role",nullable = false)
+    private Role role;
 }

@@ -1,4 +1,4 @@
-package com.tinqinacademy.authentication.core.config;
+package com.tinqinacademy.authentication.core.security;
 
 import com.tinqinacademy.authentication.persistence.enums.Role;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,10 @@
 package com.tinqinacademy.authentication.persistence.entity;
 
+import com.tinqinacademy.authentication.persistence.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +24,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
     @Column(name = "username", nullable = false,unique = true)
     private String username;
@@ -43,5 +46,8 @@ public class User extends BaseEntity {
 
     @Column(name = "birth_date",nullable = false)
     private LocalDate birthDate;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
 }

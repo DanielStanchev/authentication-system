@@ -5,7 +5,7 @@ import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
-import com.tinqinacademy.authentication.core.config.JwtUtil;
+import com.tinqinacademy.authentication.core.security.JwtUtil;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
 import com.tinqinacademy.authentication.core.exception.exceptions.NotFoundException;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
@@ -50,10 +50,11 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
         return Try.of(() -> {
                 UserEntity userToCheck = getUserEntity(input);
                 checkIfPasswordMatches(input, userToCheck);
-                jwtUtil.createToken(userToCheck.getId().toString(),userToCheck.getRole().toString());
+               jwtUtil.createToken(userToCheck.getId().toString(), userToCheck.getRole().toString());
 
                 LoginUserOutput result = LoginUserOutput.builder()
                     .build();
+
                 log.info("End login result:{}.", result);
                 return result;
             })

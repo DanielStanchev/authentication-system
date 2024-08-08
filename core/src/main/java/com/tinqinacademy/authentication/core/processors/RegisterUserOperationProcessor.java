@@ -7,6 +7,7 @@ import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
+import com.tinqinacademy.authentication.persistence.enums.Role;
 import com.tinqinacademy.authentication.persistence.repository.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -43,6 +44,7 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
     private Either<ErrorWrapper, RegisterUserOutput> registerUser(RegisterUserInput input) {
         return Try.of(()->{
         UserEntity registerUserEntity = getConvertedUserByInput(input);
+        registerUserEntity.setRole(Role.USER);
         userRepository.save(registerUserEntity);
         RegisterUserOutput result = RegisterUserOutput.builder()
                 .id(String.valueOf(registerUserEntity.getId()))

@@ -6,7 +6,7 @@ import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
-import com.tinqinacademy.authentication.persistence.entity.User;
+import com.tinqinacademy.authentication.persistence.entity.UserEntity;
 import com.tinqinacademy.authentication.persistence.repository.UserRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
@@ -42,10 +42,10 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
 
     private Either<ErrorWrapper, RegisterUserOutput> registerUser(RegisterUserInput input) {
         return Try.of(()->{
-        User registerUser = getConvertedUserByInput(input);
-        userRepository.save(registerUser);
+        UserEntity registerUserEntity = getConvertedUserByInput(input);
+        userRepository.save(registerUserEntity);
         RegisterUserOutput result = RegisterUserOutput.builder()
-                .id(String.valueOf(registerUser.getId()))
+                .id(String.valueOf(registerUserEntity.getId()))
                 .build();
 
         log.info("End register output:{}.", result);
@@ -55,8 +55,8 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
         ));
     }
 
-    private User getConvertedUserByInput(RegisterUserInput input) {
-       return conversionService.convert(input, User.UserBuilder.class)
+    private UserEntity getConvertedUserByInput(RegisterUserInput input) {
+       return conversionService.convert(input, UserEntity.UserEntityBuilder.class)
             .password(passwordEncoder.encode(input.getPassword()))
             .build();
     }

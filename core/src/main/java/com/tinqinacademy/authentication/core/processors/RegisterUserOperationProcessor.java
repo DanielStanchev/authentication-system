@@ -18,9 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
+import static io.vavr.Predicates.instanceOf;
 
 @Slf4j
 @Service
@@ -43,9 +47,14 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
 
     private Either<ErrorWrapper, RegisterUserOutput> registerUser(RegisterUserInput input) {
         return Try.of(()->{
-        UserEntity registerUserEntity = getConvertedUserByInput(input);
-        registerUserEntity.setRole(Role.USER);
-        userRepository.save(registerUserEntity);
+            UserEntity registerUserEntity = getConvertedUserByInput(input);
+
+            registerUserEntity.setRole(Role.USER);
+
+            checkIfUserIsUnderAged(registerUserEntity);
+
+            userRepository.save(registerUserEntity);
+
         RegisterUserOutput result = RegisterUserOutput.builder()
                 .id(String.valueOf(registerUserEntity.getId()))
                 .build();
@@ -53,8 +62,17 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
         log.info("End register output:{}.", result);
         return result;
         }).toEither().mapLeft(throwable -> Match(throwable).of(
+            Case($(instanceOf(IllegalArgumentException.class)), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST)),
             Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))
         ));
+    }
+
+    private static void checkIfUserIsUnderAged(UserEntity registerUserEntity) {
+        LocalDate birthDate = registerUserEntity.getBirthDate();
+        int age = Period.between(birthDate, LocalDate.now()).getYears();
+        if (age < 18) {
+            throw new IllegalArgumentException("User is underaged and cannot register");
+        }
     }
 
     private UserEntity getConvertedUserByInput(RegisterUserInput input) {

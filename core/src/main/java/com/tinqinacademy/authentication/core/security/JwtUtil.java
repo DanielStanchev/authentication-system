@@ -7,7 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.util.Base64;
 
 import java.util.Date;
 import java.util.UUID;
@@ -21,10 +20,10 @@ public class JwtUtil {
     public String createToken(String id, String role) {
 
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 300_000); // make it valid for 5 minutes
+        Date validity = new Date(now.getTime() + 12*300_000); // make it valid for 5 minutes !!
 
         return Jwts.builder()
-            .setSubject(id)
+            .claim("id",id)
             .claim("role",role)
             .setIssuedAt(now)
             .setExpiration(validity)
@@ -34,21 +33,24 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    public JwtTokenInfo extractToken(String token) {
 
+    public JwtTokenInfo extractToken(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
+            .build()
             .parseClaimsJws(token)
             .getBody();
 
-        String tokenId = claims.getId();
+        String tokenId = claims.getSubject();
         String tokenRole = claims.get("role").toString();
 
         return JwtTokenInfo.builder()

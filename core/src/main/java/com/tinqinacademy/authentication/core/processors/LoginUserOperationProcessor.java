@@ -50,9 +50,12 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
         return Try.of(() -> {
                 UserEntity userToCheck = getUserEntity(input);
                 checkIfPasswordMatches(input, userToCheck);
-               jwtUtil.createToken(userToCheck.getId().toString(), userToCheck.getRole().toString());
+                String tokenCreated = jwtUtil.createToken(userToCheck.getId()
+                                                       .toString(), userToCheck.getRole()
+                                                       .toString());
 
                 LoginUserOutput result = LoginUserOutput.builder()
+                    .token(tokenCreated)
                     .build();
 
                 log.info("End login result:{}.", result);

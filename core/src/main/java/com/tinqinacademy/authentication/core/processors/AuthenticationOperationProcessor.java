@@ -54,7 +54,6 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
 
                 AuthenticateUserOutput output = AuthenticateUserOutput.builder()
                     .username(user.getUsername())
-                    .password(user.getPassword())
                     .role(user.getRole().toString())
                     .build();
 

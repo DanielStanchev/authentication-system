@@ -4,6 +4,9 @@ import com.tinqinacademy.authentication.api.exceptionmodel.ErrorWrapper;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUser;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserInput;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserOutput;
+import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAge;
+import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeInput;
+import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeOutput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
@@ -15,8 +18,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vavr.control.Either;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,11 +34,28 @@ public class UserController extends BaseController {
     private final RegisterUser registerUser;
     private final LoginUser loginUser;
     private final AuthenticateUser authenticateUser;
+    private final CheckUserAge checkUserAge;
 
-    public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser) {
+    public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
+        this.checkUserAge = checkUserAge;
+    }
+
+    @Operation(summary = "Get user age.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "404", description = "NOT FOUND")})
+    @GetMapping("auth/check/{userId}")
+    public ResponseEntity<?> checkUserAge(@PathVariable("userId") String userId){
+
+        CheckUserAgeInput input = CheckUserAgeInput.builder()
+            .userId(userId)
+            .build();
+
+        Either<ErrorWrapper, CheckUserAgeOutput> output = checkUserAge.process(input);
+        return handleResult(output, HttpStatus.OK);
     }
 
     @Operation(summary = "Authenticate user.")
@@ -63,7 +86,19 @@ public class UserController extends BaseController {
             .build();
 
         Either<ErrorWrapper, LoginUserOutput> output = loginUser.process(input);
-        return handleResult(output, HttpStatus.OK);
+
+        HttpHeaders headers;
+
+        if (output.isLeft()) {
+            return new ResponseEntity<>(output.getLeft(), output.getLeft()
+                .getErrorResponseInfoList()
+                .getFirst()
+                .getHttpStatus());
+        }
+
+        headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + output.get().getToken());
+        return new ResponseEntity<>(output.get(), headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Register a user.")

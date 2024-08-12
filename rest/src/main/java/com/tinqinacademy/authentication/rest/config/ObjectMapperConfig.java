@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class ApplicationBeanConfiguration {
+public class ObjectMapperConfig {
 
     @Bean
     public ObjectMapper objectMapper() {

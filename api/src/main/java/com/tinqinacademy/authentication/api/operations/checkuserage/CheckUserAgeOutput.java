@@ -1,6 +1,5 @@
-package com.tinqinacademy.authentication.api.operations.loginuser;
+package com.tinqinacademy.authentication.api.operations.checkuserage;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tinqinacademy.authentication.api.base.OperationOutput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class LoginUserOutput implements OperationOutput {
-    @JsonIgnore
-   private String token;
+public class CheckUserAgeOutput implements OperationOutput {
+    private Integer age;
 }

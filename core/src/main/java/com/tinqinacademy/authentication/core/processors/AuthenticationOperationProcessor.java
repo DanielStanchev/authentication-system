@@ -71,7 +71,7 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
     private static void checkIfTokenRoleMatchesUserRole(UserEntity user, JwtTokenInfo jwtTokenInfo) throws IllegalAccessException {
         if (!user.getRole()
             .equals(jwtTokenInfo.getRole())) {
-            throw new IllegalAccessException("Invalid role");
+            throw new IllegalAccessException("Invalid role.");
         }
     }
 

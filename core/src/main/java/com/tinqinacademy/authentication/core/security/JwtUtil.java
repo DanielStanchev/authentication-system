@@ -50,7 +50,7 @@ public class JwtUtil {
             .parseClaimsJws(token)
             .getBody();
 
-        String tokenId = claims.getSubject();
+        String tokenId = claims.get("id").toString();
         String tokenRole = claims.get("role").toString();
 
         return JwtTokenInfo.builder()

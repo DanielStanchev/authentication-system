@@ -13,6 +13,9 @@ import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAge
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
+import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUser;
+import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserInput;
+import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserOutput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
@@ -43,14 +46,16 @@ public class UserController extends BaseController {
     private final AuthenticateUser authenticateUser;
     private final CheckUserAge checkUserAge;
     private final ChangePassword changePassword;
+    private final PromoteUser promoteUser;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
-                          ChangePassword changePassword) {
+                          ChangePassword changePassword, PromoteUser promoteUser) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
         this.checkUserAge = checkUserAge;
         this.changePassword = changePassword;
+        this.promoteUser = promoteUser;
     }
 
     @Operation(summary = "Get user age.")
@@ -152,4 +157,21 @@ public class UserController extends BaseController {
         Either<ErrorWrapper, ChangePasswordOutput> output = changePassword.process(input);
         return handleResult(output,HttpStatus.OK);
     }
+
+    @Operation(summary = "Admin promotes User.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping("auth/promote")
+    public ResponseEntity<?> promoteUser(@RequestBody PromoteUserInput promoteUserInput){
+
+       PromoteUserInput input = PromoteUserInput.builder()
+           .userId(promoteUserInput.getUserId())
+           .build();
+
+        Either<ErrorWrapper, PromoteUserOutput> output = promoteUser.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
+
+
 }

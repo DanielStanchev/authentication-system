@@ -48,19 +48,15 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
     private Either<ErrorWrapper, RegisterUserOutput> registerUser(RegisterUserInput input) {
         return Try.of(()->{
             UserEntity registerUserEntity = getConvertedUserByInput(input);
-
             registerUserEntity.setRole(Role.USER);
-
             checkIfUserIsUnderAged(registerUserEntity);
-
             userRepository.save(registerUserEntity);
-
-        RegisterUserOutput result = RegisterUserOutput.builder()
+            RegisterUserOutput result = RegisterUserOutput.builder()
                 .id(String.valueOf(registerUserEntity.getId()))
                 .build();
+            log.info("End register output:{}.", result);
+            return result;
 
-        log.info("End register output:{}.", result);
-        return result;
         }).toEither().mapLeft(throwable -> Match(throwable).of(
             Case($(instanceOf(IllegalArgumentException.class)), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST)),
             Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))

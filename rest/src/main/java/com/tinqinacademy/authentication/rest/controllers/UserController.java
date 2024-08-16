@@ -4,6 +4,9 @@ import com.tinqinacademy.authentication.api.exceptionmodel.ErrorWrapper;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUser;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserInput;
 import com.tinqinacademy.authentication.api.operations.authenticateuser.AuthenticateUserOutput;
+import com.tinqinacademy.authentication.api.operations.changepassword.ChangePassword;
+import com.tinqinacademy.authentication.api.operations.changepassword.ChangePasswordInput;
+import com.tinqinacademy.authentication.api.operations.changepassword.ChangePasswordOutput;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAge;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeInput;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeOutput;
@@ -25,7 +28,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
+import java.util.Base64;
 
 @Tag(name = "User API", description = "User related functionality.")
 @RestController
@@ -35,12 +42,15 @@ public class UserController extends BaseController {
     private final LoginUser loginUser;
     private final AuthenticateUser authenticateUser;
     private final CheckUserAge checkUserAge;
+    private final ChangePassword changePassword;
 
-    public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge) {
+    public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
+                          ChangePassword changePassword) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
         this.checkUserAge = checkUserAge;
+        this.changePassword = changePassword;
     }
 
     @Operation(summary = "Get user age.")
@@ -120,5 +130,26 @@ public class UserController extends BaseController {
 
         Either<ErrorWrapper, RegisterUserOutput> output = registerUser.process(input);
         return handleResult(output, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "User change password.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping("auth/change-password")
+    public ResponseEntity<?> changePassword(@RequestHeader(HttpHeaders.AUTHORIZATION) String header,
+                                            @RequestBody ChangePasswordInput changePasswordInput){
+
+        String token = header.substring(7);
+
+        ChangePasswordInput input = ChangePasswordInput.builder()
+            .token(token)
+            .oldPassword(changePasswordInput.getOldPassword())
+            .newPassword(changePasswordInput.getNewPassword())
+            .email(changePasswordInput.getEmail())
+            .build();
+
+        Either<ErrorWrapper, ChangePasswordOutput> output = changePassword.process(input);
+        return handleResult(output,HttpStatus.OK);
     }
 }

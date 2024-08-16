@@ -10,6 +10,9 @@ import com.tinqinacademy.authentication.api.operations.changepassword.ChangePass
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAge;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeInput;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeOutput;
+import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUser;
+import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUserInput;
+import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUserOutput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
@@ -34,9 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.Base64;
-
 @Tag(name = "User API", description = "User related functionality.")
 @RestController
 public class UserController extends BaseController {
@@ -47,15 +47,17 @@ public class UserController extends BaseController {
     private final CheckUserAge checkUserAge;
     private final ChangePassword changePassword;
     private final PromoteUser promoteUser;
+    private final DemoteUser demoteUser;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
-                          ChangePassword changePassword, PromoteUser promoteUser) {
+                          ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
         this.checkUserAge = checkUserAge;
         this.changePassword = changePassword;
         this.promoteUser = promoteUser;
+        this.demoteUser = demoteUser;
     }
 
     @Operation(summary = "Get user age.")
@@ -170,6 +172,21 @@ public class UserController extends BaseController {
            .build();
 
         Either<ErrorWrapper, PromoteUserOutput> output = promoteUser.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
+
+    @Operation(summary = "Admin demotes Admin user.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping("auth/demote")
+    public ResponseEntity<?> demoteUser(@RequestBody DemoteUserInput demoteUserInput){
+
+        DemoteUserInput input = DemoteUserInput.builder()
+            .userId(demoteUserInput.getUserId())
+            .build();
+
+        Either<ErrorWrapper, DemoteUserOutput> output = demoteUser.process(input);
         return handleResult(output,HttpStatus.OK);
     }
 

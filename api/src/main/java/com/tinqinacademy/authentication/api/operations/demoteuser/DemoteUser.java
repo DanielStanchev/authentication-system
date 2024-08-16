@@ -1,3 +1,5 @@
 package com.tinqinacademy.authentication.api.operations.demoteuser;
 
-public interface DemoteUser {}
+import com.tinqinacademy.authentication.api.base.OperationProcessor;
+
+public interface DemoteUser extends OperationProcessor<DemoteUserOutput,DemoteUserInput> {}

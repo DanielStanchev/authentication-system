@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 public enum Role {
 
-    ADMIN("Admin"),
-    USER("User"),
+    ADMIN("ADMIN"),
+    USER("USER"),
     UNKNOWN("");
 
     private final String code;

@@ -31,12 +31,15 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
 
     public AuthenticationOperationProcessor(ConversionService conversionService, Validator validator, ErrorMapper errorMapper,
-                                            JwtUtil jwtUtil, UserRepository userRepository, BlacklistedTokenRepository blacklistedTokenRepository) {
+                                            JwtUtil jwtUtil, UserRepository userRepository, BlacklistedTokenRepository blacklistedTokenRepository,
+                                            BlacklistedTokenRepository blacklistedTokenRepository1) {
         super(validator, conversionService,errorMapper);
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.blacklistedTokenRepository = blacklistedTokenRepository1;
     }
 
     @Override
@@ -47,11 +50,10 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
 
     private Either<ErrorWrapper, AuthenticateUserOutput> authenticateUser(AuthenticateUserInput input) {
         return Try.of(() -> {
-                jwtUtil.validateToken(input.getToken());
-                JwtTokenInfo jwtTokenInfo = jwtUtil.extractToken(input.getToken());
-                UserEntity user = getUserEntity(jwtTokenInfo);
-                checkIfTokenRoleMatchesUserRole(user, jwtTokenInfo);
-
+                JwtTokenInfo token = jwtUtil.extractTokenFromHeader(input.getHeader());
+                validateToken(String.valueOf(token));
+                UserEntity user = getUserEntity(token);
+                checkIfTokenRoleMatchesUserRole(user, token);
                 AuthenticateUserOutput output = AuthenticateUserOutput.builder()
                     .username(user.getUsername())
                     .role(user.getRole().toString())
@@ -66,6 +68,13 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
                 Case($(instanceOf(NotFoundException.class)), errorMapper.handleError(throwable, HttpStatus.NOT_FOUND)),
                 Case($(instanceOf(IllegalArgumentException.class)), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST)),
                 Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))));
+    }
+
+    private void validateToken(String token) throws IllegalAccessException {
+        if (blacklistedTokenRepository.existsByToken(token) ||
+            !jwtUtil.validateToken(token)) {
+            throw new IllegalAccessException (String.format("Invalid token: %s", token));
+        }
     }
 
     private static void checkIfTokenRoleMatchesUserRole(UserEntity user, JwtTokenInfo jwtTokenInfo) throws IllegalAccessException {

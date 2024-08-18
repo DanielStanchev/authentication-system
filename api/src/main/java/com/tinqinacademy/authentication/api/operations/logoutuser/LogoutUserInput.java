@@ -1,6 +1,8 @@
-package com.tinqinacademy.authentication.api.operations.authenticateuser;
+package com.tinqinacademy.authentication.api.operations.logoutuser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tinqinacademy.authentication.api.base.OperationInput;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +16,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class AuthenticateUserInput implements OperationInput {
-    private String header;
+public class LogoutUserInput implements OperationInput {
+
+    @JsonIgnore
+    @NotEmpty
+    private String token;
 }

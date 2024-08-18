@@ -20,11 +20,11 @@ public class JwtUtil {
     public String createToken(String id, String role) {
 
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 12*300_000); // make it valid for 5 minutes !!
+        Date validity = new Date(now.getTime() + 12 * 300_000); // make it valid for 5 minutes !!
 
         return Jwts.builder()
-            .claim("id",id)
-            .claim("role",role)
+            .claim("id", id)
+            .claim("role", role)
             .setIssuedAt(now)
             .setExpiration(validity)
             .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -33,7 +33,8 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(secretKey)
+            Jwts.parser()
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token);
             return true;
@@ -42,8 +43,11 @@ public class JwtUtil {
         }
     }
 
+    public JwtTokenInfo extractTokenFromHeader(String header) {
+        return retrieveTokenClaims(header.substring(7));
+    }
 
-    public JwtTokenInfo extractToken(String token) {
+    public JwtTokenInfo retrieveTokenClaims(String token) {
         Claims claims = Jwts.parser()
             .setSigningKey(secretKey)
             .build()

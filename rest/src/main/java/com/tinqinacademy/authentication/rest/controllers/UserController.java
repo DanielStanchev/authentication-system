@@ -16,6 +16,9 @@ import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUserOutp
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUser;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserInput;
 import com.tinqinacademy.authentication.api.operations.loginuser.LoginUserOutput;
+import com.tinqinacademy.authentication.api.operations.logoutuser.LogoutUser;
+import com.tinqinacademy.authentication.api.operations.logoutuser.LogoutUserInput;
+import com.tinqinacademy.authentication.api.operations.logoutuser.LogoutUserOutput;
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUser;
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserInput;
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserOutput;
@@ -48,9 +51,10 @@ public class UserController extends BaseController {
     private final ChangePassword changePassword;
     private final PromoteUser promoteUser;
     private final DemoteUser demoteUser;
+    private final LogoutUser logoutUser;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
-                          ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser) {
+                          ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser, LogoutUser logoutUser) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
@@ -58,6 +62,7 @@ public class UserController extends BaseController {
         this.changePassword = changePassword;
         this.promoteUser = promoteUser;
         this.demoteUser = demoteUser;
+        this.logoutUser = logoutUser;
     }
 
     @Operation(summary = "Get user age.")
@@ -83,7 +88,7 @@ public class UserController extends BaseController {
     public ResponseEntity<?> authenticate(@RequestBody AuthenticateUserInput authenticateUserInput) {
 
         AuthenticateUserInput input = AuthenticateUserInput.builder()
-            .token(authenticateUserInput.getToken())
+            .header(authenticateUserInput.getHeader())
             .build();
 
         Either<ErrorWrapper, AuthenticateUserOutput> output = authenticateUser.process(input);
@@ -190,5 +195,20 @@ public class UserController extends BaseController {
         return handleResult(output,HttpStatus.OK);
     }
 
+    @Operation(summary = "User logout.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping("auth/logout")
+    public ResponseEntity<?> logoutUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String header){
 
+        String token = header.substring(7);
+
+        LogoutUserInput input = LogoutUserInput.builder()
+            .token(token)
+            .build();
+
+        Either<ErrorWrapper, LogoutUserOutput> output = logoutUser.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
 }

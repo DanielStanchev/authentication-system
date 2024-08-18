@@ -82,7 +82,7 @@ public class ChangePasswordOperationProcessor extends BaseOperationProcessor imp
 
     private void checkIfUserIsAuthenticated(String token) throws AuthenticationException {
         AuthenticateUserInput inputForAuthentication = AuthenticateUserInput.builder()
-            .token(token)
+            .header(token)
             .build();
 
         Either<ErrorWrapper, AuthenticateUserOutput> output = authenticateUser.process(inputForAuthentication);

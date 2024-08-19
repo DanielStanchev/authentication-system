@@ -10,6 +10,9 @@ import com.tinqinacademy.authentication.api.operations.changepassword.ChangePass
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAge;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeInput;
 import com.tinqinacademy.authentication.api.operations.checkuserage.CheckUserAgeOutput;
+import com.tinqinacademy.authentication.api.operations.confirmregistration.ConfirmRegistration;
+import com.tinqinacademy.authentication.api.operations.confirmregistration.ConfirmRegistrationInput;
+import com.tinqinacademy.authentication.api.operations.confirmregistration.ConfirmRegistrationOutput;
 import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUser;
 import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUserInput;
 import com.tinqinacademy.authentication.api.operations.demoteuser.DemoteUserOutput;
@@ -52,9 +55,11 @@ public class UserController extends BaseController {
     private final PromoteUser promoteUser;
     private final DemoteUser demoteUser;
     private final LogoutUser logoutUser;
+    private final ConfirmRegistration confirmRegistration;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
-                          ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser, LogoutUser logoutUser) {
+                          ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser, LogoutUser logoutUser,
+                          ConfirmRegistration confirmRegistration) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
@@ -63,6 +68,7 @@ public class UserController extends BaseController {
         this.promoteUser = promoteUser;
         this.demoteUser = demoteUser;
         this.logoutUser = logoutUser;
+        this.confirmRegistration = confirmRegistration;
     }
 
     @Operation(summary = "Get user age.")
@@ -209,6 +215,21 @@ public class UserController extends BaseController {
             .build();
 
         Either<ErrorWrapper, LogoutUserOutput> output = logoutUser.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
+
+    @Operation(summary = "User confirm registration.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping("auth/confirm-registration")
+    public ResponseEntity<?> confirmRegistration(@RequestBody ConfirmRegistrationInput confirmRegistrationInput){
+
+        ConfirmRegistrationInput input = ConfirmRegistrationInput.builder()
+            .confirmationCode(confirmRegistrationInput.getConfirmationCode())
+            .build();
+
+        Either<ErrorWrapper, ConfirmRegistrationOutput> output = confirmRegistration.process(input);
         return handleResult(output,HttpStatus.OK);
     }
 }

@@ -50,6 +50,7 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
         return Try.of(() -> {
                 UserEntity userToCheck = getUserEntity(input);
                 checkIfPasswordMatches(input, userToCheck);
+                checkIfAccountIsActivated(userToCheck);
                 String tokenCreated = jwtUtil.createToken(userToCheck.getId()
                                                        .toString(), userToCheck.getRole()
                                                        .toString());
@@ -68,6 +69,12 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
                 Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))));
     }
 
+    private static void checkIfAccountIsActivated(UserEntity userToCheck) throws IllegalAccessException {
+        if(!userToCheck.getIsAccountActivated()){
+            throw new IllegalAccessException("User account is not activated");
+        }
+    }
+
     private UserEntity getUserEntity(LoginUserInput input) {
         return userRepository.findByUsername(input.getUsername())
             .orElseThrow(() -> new NotFoundException("User not found."));
@@ -75,7 +82,7 @@ public class LoginUserOperationProcessor extends BaseOperationProcessor implemen
 
     private void checkIfPasswordMatches(LoginUserInput input, UserEntity userToCheck) {
         if (userToCheck != null && !passwordEncoder.matches(input.getPassword(), userToCheck.getPassword())) {
-            throw new IllegalArgumentException("Wrong password");
+            throw new IllegalArgumentException("Wrong password.");
         }
     }
 }

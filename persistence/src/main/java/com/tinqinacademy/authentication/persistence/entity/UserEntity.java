@@ -47,6 +47,9 @@ public class UserEntity extends BaseEntity {
     @Column(name = "birth_date",nullable = false)
     private LocalDate birthDate;
 
+    @Column(name = "is_account_activated", nullable = false)
+    private Boolean isAccountActivated;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role",nullable = false)
     private Role role;

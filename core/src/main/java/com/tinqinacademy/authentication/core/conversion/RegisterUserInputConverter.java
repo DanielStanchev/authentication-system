@@ -16,6 +16,7 @@ public class RegisterUserInputConverter extends BaseConverter<RegisterUserInput,
             .lastName(input.getLastName())
             .password(input.getPassword())
             .phoneNo(input.getPhoneNo())
+            .isAccountActivated(false)
             .username(input.getUsername());
     }
 }

@@ -15,6 +15,8 @@ import java.time.LocalDate;
 @Component
 public class InitialAdminInitialize implements ApplicationRunner {
 
+    private static final String ADMIN_CREDENTIALS = "admin";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -24,18 +26,19 @@ public class InitialAdminInitialize implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         log.info("Start AdminInitializer for initial Admin");
 
-        if (!userRepository.existsByUsername("admin")) {
+        if (!userRepository.existsByUsername(ADMIN_CREDENTIALS)) {
             UserEntity admin = UserEntity.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin"))
-                .firstName("admin")
-                .lastName("admin")
+                .username(ADMIN_CREDENTIALS)
+                .password(passwordEncoder.encode(ADMIN_CREDENTIALS))
+                .firstName(ADMIN_CREDENTIALS)
+                .lastName(ADMIN_CREDENTIALS)
                 .email("admin@admin.com")
-                .birthDate(LocalDate.ofEpochDay(1995-12-07))
+                .birthDate(LocalDate.of(1995,12,7))
                 .phoneNo("0896356053")
+                .isAccountActivated(true)
                 .role(Role.ADMIN)
                 .build();
             userRepository.save(admin);

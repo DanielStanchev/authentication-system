@@ -59,8 +59,9 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
     private Either<ErrorWrapper, RegisterUserOutput> registerUser(RegisterUserInput input) {
         return Try.of(()->{
             UserEntity registerUserEntity = getConvertedUserByInput(input);
-            registerUserEntity.setRole(Role.USER);
+            checkIfUserAlreadyExists(input);
             checkIfUserIsUnderAged(registerUserEntity);
+            setInitialRoleAsUser(registerUserEntity);
             UserEntity savedUser = userRepository.save(registerUserEntity);
             String generateActivationCode = getGenerateActivationCode();
             ActivationCode activationCode = getActivationCode(generateActivationCode, savedUser);
@@ -77,6 +78,10 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
             Case($(instanceOf(IllegalArgumentException.class)), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST)),
             Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))
         ));
+    }
+
+    private static void setInitialRoleAsUser(UserEntity registerUserEntity) {
+        registerUserEntity.setRole(Role.USER);
     }
 
     private void saveActivationCodeInDB(ActivationCode activationCode) {
@@ -104,6 +109,18 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
         int age = Period.between(birthDate, LocalDate.now()).getYears();
         if (age < 18) {
             throw new IllegalArgumentException("User is underage and cannot register");
+        }
+    }
+
+    private void checkIfUserAlreadyExists(RegisterUserInput input) {
+        if(userRepository.existsByUsername(input.getUsername())){
+            throw new IllegalArgumentException("Username already exists.");
+        }
+        if(userRepository.existsByEmail(input.getEmail())){
+            throw new IllegalArgumentException("User with same Email address already exists.");
+        }
+        if(userRepository.existsByPhoneNo(input.getPhoneNo())){
+            throw new IllegalArgumentException("User with same phone number already exists.");
         }
     }
 

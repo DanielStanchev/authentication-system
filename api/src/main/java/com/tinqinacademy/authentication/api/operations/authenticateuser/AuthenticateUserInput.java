@@ -15,5 +15,5 @@ import lombok.ToString;
 @ToString
 @Builder
 public class AuthenticateUserInput implements OperationInput {
-    private String header;
+    private String token;
 }

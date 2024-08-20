@@ -16,6 +16,6 @@ import lombok.ToString;
 @ToString
 @Builder
 public class AuthenticateUserOutput implements OperationOutput {
-    private String username;
+    private String id;
     private String role;
 }

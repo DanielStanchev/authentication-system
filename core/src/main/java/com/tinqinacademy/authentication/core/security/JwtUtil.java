@@ -43,8 +43,8 @@ public class JwtUtil {
         }
     }
 
-    public JwtTokenInfo extractTokenFromHeader(String header) {
-        return retrieveTokenClaims(header.substring(7));
+    public String getToken(String token) {
+        return token;
     }
 
     public JwtTokenInfo retrieveTokenClaims(String token) {

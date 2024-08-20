@@ -70,7 +70,7 @@ public class LogoutOperationProcessor extends BaseOperationProcessor implements 
 
     private void checkIfUserIsAuthenticated(String token) throws AuthenticationException {
         AuthenticateUserInput inputForAuthentication = AuthenticateUserInput.builder()
-            .header(token)
+            .token(token)
             .build();
 
         Either<ErrorWrapper, AuthenticateUserOutput> output = authenticateUser.process(inputForAuthentication);

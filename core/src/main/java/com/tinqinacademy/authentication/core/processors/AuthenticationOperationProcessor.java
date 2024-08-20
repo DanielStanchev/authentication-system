@@ -50,12 +50,13 @@ public class AuthenticationOperationProcessor extends BaseOperationProcessor imp
 
     private Either<ErrorWrapper, AuthenticateUserOutput> authenticateUser(AuthenticateUserInput input) {
         return Try.of(() -> {
-                JwtTokenInfo token = jwtUtil.extractTokenFromHeader(input.getHeader());
+                String token = jwtUtil.getToken(input.getToken());
+                JwtTokenInfo tokenInfo = jwtUtil.retrieveTokenClaims(token);
                 validateToken(String.valueOf(token));
-                UserEntity user = getUserEntity(token);
-                checkIfTokenRoleMatchesUserRole(user, token);
+                UserEntity user = getUserEntity(tokenInfo);
+                checkIfTokenRoleMatchesUserRole(user, tokenInfo);
                 AuthenticateUserOutput output = AuthenticateUserOutput.builder()
-                    .username(user.getUsername())
+                    .id(String.valueOf(user.getId()))
                     .role(user.getRole().toString())
                     .build();
 

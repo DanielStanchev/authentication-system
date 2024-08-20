@@ -94,7 +94,7 @@ public class UserController extends BaseController {
     public ResponseEntity<?> authenticate(@RequestBody AuthenticateUserInput authenticateUserInput) {
 
         AuthenticateUserInput input = AuthenticateUserInput.builder()
-            .header(authenticateUserInput.getHeader())
+            .token(authenticateUserInput.getToken())
             .build();
 
         Either<ErrorWrapper, AuthenticateUserOutput> output = authenticateUser.process(input);

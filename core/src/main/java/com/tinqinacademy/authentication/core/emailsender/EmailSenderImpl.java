@@ -1,6 +1,5 @@
 package com.tinqinacademy.authentication.core.emailsender;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,13 +8,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 @Slf4j
 @Service
-public class RegistrationEmailSenderImpl implements RegistrationEmailSenderService{
+public class EmailSenderImpl implements EmailSenderService {
 
     @Value("${spring.mail.username}")
     private String from;
     private final JavaMailSender emailSender;
 
-    public RegistrationEmailSenderImpl(JavaMailSender emailSender) {this.emailSender = emailSender;}
+    public EmailSenderImpl(JavaMailSender emailSender) {this.emailSender = emailSender;}
 
 
     @Override

@@ -14,4 +14,5 @@ public class RestApiRoutes {
     public static final String AUTH_DEMOTE = API_V1_AUTH + "/demote";
     public static final String AUTH_LOGOUT = API_V1_AUTH + "/logout";
     public static final String AUTH_CONFIRM_REGISTRATION = API_V1_AUTH + "/confirm-registration";
+    public static final String AUTH_RECOVER_PASSWORD = API_V1_AUTH + "/recover-password";
 }

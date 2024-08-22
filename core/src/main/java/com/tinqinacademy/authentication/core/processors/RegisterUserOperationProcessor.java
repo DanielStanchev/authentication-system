@@ -5,7 +5,7 @@ import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
-import com.tinqinacademy.authentication.core.emailsender.RegistrationEmailSenderService;
+import com.tinqinacademy.authentication.core.emailsender.EmailSenderService;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
 import com.tinqinacademy.authentication.persistence.entity.ActivationCode;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
@@ -37,16 +37,16 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RegistrationEmailSenderService registrationEmailSenderService;
+    private final EmailSenderService emailSenderService;
     private final ActivationCodeRepository activationCodeRepository;
 
     public RegisterUserOperationProcessor(ConversionService conversionService, Validator validator, ErrorMapper errorMapper, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                                          RegistrationEmailSenderService registrationEmailSenderService,
+                                          EmailSenderService emailSenderService,
                                           ActivationCodeRepository activationCodeRepository) {
         super(validator, conversionService,errorMapper);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.registrationEmailSenderService = registrationEmailSenderService;
+        this.emailSenderService = emailSenderService;
         this.activationCodeRepository = activationCodeRepository;
     }
 
@@ -100,8 +100,8 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
     }
 
     private void sendActivationCode(String email, String code) {
-        registrationEmailSenderService.sendEmail(email, "Activation Code",
-                                      String.format("The registration code is: %s", code));
+        emailSenderService.sendEmail(email, "Activation Code",
+                                     String.format("The registration code is: %s", code));
     }
 
     private static void checkIfUserIsUnderAged(UserEntity registerUserEntity) {

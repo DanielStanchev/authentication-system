@@ -25,6 +25,9 @@ import com.tinqinacademy.authentication.api.operations.logoutuser.LogoutUserOutp
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUser;
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserInput;
 import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserOutput;
+import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPassword;
+import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPasswordInput;
+import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPasswordOutput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
@@ -57,10 +60,11 @@ public class UserController extends BaseController {
     private final DemoteUser demoteUser;
     private final LogoutUser logoutUser;
     private final ConfirmRegistration confirmRegistration;
+    private final RecoverPassword recoverPassword;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
                           ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser, LogoutUser logoutUser,
-                          ConfirmRegistration confirmRegistration) {
+                          ConfirmRegistration confirmRegistration, RecoverPassword recoverPassword) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
@@ -70,6 +74,7 @@ public class UserController extends BaseController {
         this.demoteUser = demoteUser;
         this.logoutUser = logoutUser;
         this.confirmRegistration = confirmRegistration;
+        this.recoverPassword = recoverPassword;
     }
 
     @Operation(summary = "Get user age.")
@@ -233,4 +238,21 @@ public class UserController extends BaseController {
         Either<ErrorWrapper, ConfirmRegistrationOutput> output = confirmRegistration.process(input);
         return handleResult(output,HttpStatus.OK);
     }
+
+    @Operation(summary = "Recover password.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "OK"),
+        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+    @PostMapping(RestApiRoutes.AUTH_RECOVER_PASSWORD)
+    public ResponseEntity<?> recoverPassword(@RequestBody RecoverPasswordInput recoverPasswordInput){
+
+        RecoverPasswordInput input = RecoverPasswordInput.builder()
+            .email(recoverPasswordInput.getEmail())
+            .build();
+
+        Either<ErrorWrapper, RecoverPasswordOutput> output = recoverPassword.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
+
+
 }

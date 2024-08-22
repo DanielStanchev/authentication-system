@@ -31,6 +31,9 @@ import com.tinqinacademy.authentication.api.operations.recoverpassword.RecoverPa
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
+import com.tinqinacademy.authentication.api.operations.resetpassword.ResetPassword;
+import com.tinqinacademy.authentication.api.operations.resetpassword.ResetPasswordInput;
+import com.tinqinacademy.authentication.api.operations.resetpassword.ResetPasswordOutput;
 import com.tinqinacademy.authentication.api.restapiroutes.RestApiRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,10 +64,11 @@ public class UserController extends BaseController {
     private final LogoutUser logoutUser;
     private final ConfirmRegistration confirmRegistration;
     private final RecoverPassword recoverPassword;
+    private final ResetPassword resetPassword;
 
     public UserController(RegisterUser registerUser, LoginUser loginUser, AuthenticateUser authenticateUser, CheckUserAge checkUserAge,
                           ChangePassword changePassword, PromoteUser promoteUser, DemoteUser demoteUser, LogoutUser logoutUser,
-                          ConfirmRegistration confirmRegistration, RecoverPassword recoverPassword) {
+                          ConfirmRegistration confirmRegistration, RecoverPassword recoverPassword, ResetPassword resetPassword) {
         this.registerUser = registerUser;
         this.loginUser = loginUser;
         this.authenticateUser = authenticateUser;
@@ -75,12 +79,15 @@ public class UserController extends BaseController {
         this.logoutUser = logoutUser;
         this.confirmRegistration = confirmRegistration;
         this.recoverPassword = recoverPassword;
+        this.resetPassword = resetPassword;
     }
 
     @Operation(summary = "Get user age.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "404", description = "NOT FOUND")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     @GetMapping(RestApiRoutes.AUTH_CHECK_USER_AGE)
     public ResponseEntity<?> checkUserAge(@PathVariable("userId") String userId){
 
@@ -94,8 +101,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Authenticate user.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_AUTHENTICATE)
     public ResponseEntity<?> authenticate(@RequestBody AuthenticateUserInput authenticateUserInput) {
 
@@ -109,8 +117,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Login user.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_LOGIN)
     public ResponseEntity<?> login(@RequestBody LoginUserInput loginUserInput) {
 
@@ -137,8 +146,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Register a user.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "CREATED"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_REGISTER)
     public ResponseEntity<?> register(@RequestBody RegisterUserInput registerUserInput) {
 
@@ -158,8 +168,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "User change password.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_CHANGE_PASSWORD)
     public ResponseEntity<?> changePassword(@RequestHeader(HttpHeaders.AUTHORIZATION) String header,
                                             @RequestBody ChangePasswordInput changePasswordInput){
@@ -179,8 +190,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Admin promotes User.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_PROMOTE)
     public ResponseEntity<?> promoteUser(@RequestBody PromoteUserInput promoteUserInput){
 
@@ -194,8 +206,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Admin demotes Admin user.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_DEMOTE)
     public ResponseEntity<?> demoteUser(@RequestBody DemoteUserInput demoteUserInput){
 
@@ -209,8 +222,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "User logout.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_LOGOUT)
     public ResponseEntity<?> logoutUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String header){
 
@@ -226,8 +240,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "User confirm registration.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "OK"),
-        @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
     @PostMapping(RestApiRoutes.AUTH_CONFIRM_REGISTRATION)
     public ResponseEntity<?> confirmRegistration(@RequestBody ConfirmRegistrationInput confirmRegistrationInput){
 
@@ -254,5 +269,20 @@ public class UserController extends BaseController {
         return handleResult(output,HttpStatus.OK);
     }
 
+    @Operation(summary = "Reset password.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok"),
+        @ApiResponse(responseCode = "404", description = "Not found"),
+        @ApiResponse(responseCode = "400", description = "Bad request")})
+    @PostMapping(RestApiRoutes.AUTH_RESET_PASSWORD)
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordInput resetPasswordInput){
 
+        ResetPasswordInput input = ResetPasswordInput.builder()
+            .newPassword(resetPasswordInput.getNewPassword())
+            .recoveryCode(resetPasswordInput.getRecoveryCode())
+            .build();
+
+        Either<ErrorWrapper, ResetPasswordOutput> output = resetPassword.process(input);
+        return handleResult(output,HttpStatus.OK);
+    }
 }

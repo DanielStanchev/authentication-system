@@ -28,6 +28,7 @@ import com.tinqinacademy.authentication.api.operations.promoteuser.PromoteUserOu
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
+import com.tinqinacademy.authentication.api.restapiroutes.RestApiRoutes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -75,7 +76,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "404", description = "NOT FOUND")})
-    @GetMapping("auth/check/{userId}")
+    @GetMapping(RestApiRoutes.AUTH_CHECK_USER_AGE)
     public ResponseEntity<?> checkUserAge(@PathVariable("userId") String userId){
 
         CheckUserAgeInput input = CheckUserAgeInput.builder()
@@ -90,7 +91,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/authenticate")
+    @PostMapping(RestApiRoutes.AUTH_AUTHENTICATE)
     public ResponseEntity<?> authenticate(@RequestBody AuthenticateUserInput authenticateUserInput) {
 
         AuthenticateUserInput input = AuthenticateUserInput.builder()
@@ -105,7 +106,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/login")
+    @PostMapping(RestApiRoutes.AUTH_LOGIN)
     public ResponseEntity<?> login(@RequestBody LoginUserInput loginUserInput) {
 
         LoginUserInput input = LoginUserInput.builder()
@@ -133,7 +134,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "CREATED"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/register")
+    @PostMapping(RestApiRoutes.AUTH_REGISTER)
     public ResponseEntity<?> register(@RequestBody RegisterUserInput registerUserInput) {
 
         RegisterUserInput input = RegisterUserInput.builder()
@@ -154,7 +155,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/change-password")
+    @PostMapping(RestApiRoutes.AUTH_CHANGE_PASSWORD)
     public ResponseEntity<?> changePassword(@RequestHeader(HttpHeaders.AUTHORIZATION) String header,
                                             @RequestBody ChangePasswordInput changePasswordInput){
 
@@ -175,7 +176,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/promote")
+    @PostMapping(RestApiRoutes.AUTH_PROMOTE)
     public ResponseEntity<?> promoteUser(@RequestBody PromoteUserInput promoteUserInput){
 
        PromoteUserInput input = PromoteUserInput.builder()
@@ -190,7 +191,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/demote")
+    @PostMapping(RestApiRoutes.AUTH_DEMOTE)
     public ResponseEntity<?> demoteUser(@RequestBody DemoteUserInput demoteUserInput){
 
         DemoteUserInput input = DemoteUserInput.builder()
@@ -205,7 +206,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/logout")
+    @PostMapping(RestApiRoutes.AUTH_LOGOUT)
     public ResponseEntity<?> logoutUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String header){
 
         String token = header.substring(7);
@@ -222,7 +223,7 @@ public class UserController extends BaseController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "OK"),
         @ApiResponse(responseCode = "400", description = "BAD REQUEST")})
-    @PostMapping("auth/confirm-registration")
+    @PostMapping(RestApiRoutes.AUTH_CONFIRM_REGISTRATION)
     public ResponseEntity<?> confirmRegistration(@RequestBody ConfirmRegistrationInput confirmRegistrationInput){
 
         ConfirmRegistrationInput input = ConfirmRegistrationInput.builder()

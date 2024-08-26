@@ -5,8 +5,9 @@ import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUser
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserInput;
 import com.tinqinacademy.authentication.api.operations.registeruser.RegisterUserOutput;
 import com.tinqinacademy.authentication.core.base.BaseOperationProcessor;
-import com.tinqinacademy.authentication.core.emailsender.EmailSenderService;
 import com.tinqinacademy.authentication.core.exception.ErrorMapper;
+import com.tinqinacademy.authentication.kafka.model.EmailMessage;
+import com.tinqinacademy.authentication.kafka.producer.KafkaEmailProducer;
 import com.tinqinacademy.authentication.persistence.entity.ActivationCode;
 import com.tinqinacademy.authentication.persistence.entity.UserEntity;
 import com.tinqinacademy.authentication.persistence.enums.Role;
@@ -37,17 +38,16 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailSenderService emailSenderService;
     private final ActivationCodeRepository activationCodeRepository;
+    private final KafkaEmailProducer kafkaEmailProducer;
 
     public RegisterUserOperationProcessor(ConversionService conversionService, Validator validator, ErrorMapper errorMapper, UserRepository userRepository, PasswordEncoder passwordEncoder,
-                                          EmailSenderService emailSenderService,
-                                          ActivationCodeRepository activationCodeRepository) {
+                                          ActivationCodeRepository activationCodeRepository, KafkaEmailProducer kafkaEmailProducer) {
         super(validator, conversionService,errorMapper);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailSenderService = emailSenderService;
         this.activationCodeRepository = activationCodeRepository;
+        this.kafkaEmailProducer = kafkaEmailProducer;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
             String generateActivationCode = getGenerateActivationCode();
             ActivationCode activationCode = getActivationCode(generateActivationCode, savedUser);
             saveActivationCodeInDB(activationCode);
-            sendActivationCode(savedUser.getEmail(), activationCode.toString());
+            sendActivationCode(savedUser, activationCode);
 
             RegisterUserOutput result = RegisterUserOutput.builder()
                 .id(String.valueOf(registerUserEntity.getId()))
@@ -78,6 +78,16 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
             Case($(instanceOf(IllegalArgumentException.class)), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST)),
             Case($(), errorMapper.handleError(throwable, HttpStatus.BAD_REQUEST))
         ));
+    }
+
+    private void sendActivationCode(UserEntity savedUser, ActivationCode activationCode) {
+        String subject = ("Activation Code: ");
+        EmailMessage message = EmailMessage.builder()
+            .to(savedUser.getEmail())
+            .subject(subject)
+            .content(activationCode.getActivationCode())
+            .build();
+        kafkaEmailProducer.sendEmailMessage(message);
     }
 
     private static void setInitialRoleAsUser(UserEntity registerUserEntity) {
@@ -97,11 +107,6 @@ public class RegisterUserOperationProcessor extends BaseOperationProcessor imple
             .activationCode(generateActivationCode)
             .userEmail(savedUser.getEmail())
             .build();
-    }
-
-    private void sendActivationCode(String email, String code) {
-        emailSenderService.sendEmail(email, "Activation Code",
-                                     String.format("The registration code is: %s", code));
     }
 
     private static void checkIfUserIsUnderAged(UserEntity registerUserEntity) {
